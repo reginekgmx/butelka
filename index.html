@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}body{margin:0}</style>
+<title>Gra w butelkę</title>
+<meta name="theme-color" content="#1b120c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Outfit:wght@400;600&display=swap">
+<style>
+/* Layout: jeden ekran — okrągły drewniany stół w centrum, butelka na nim, napis pod spodem */
+:root {
+  --night: #1b120c;
+  --wood: #6b3f22;
+  --wood-dark: #3d2414;
+  --felt: #24452f;
+  --glass: #3fa565;
+  --cream: #f3e6cf;
+  --muted: #b89c7e;
+  --display: "Bagel Fat One", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --body: "Outfit", system-ui, -apple-system, sans-serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  background: radial-gradient(ellipse at 50% 40%, #2c1d12 0%, var(--night) 70%);
+  background-color: var(--night);
+  color: var(--cream);
+  font-family: var(--body);
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none; -webkit-user-select: none;
+}
+.app {
+  height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+  gap: 16px;
+  padding-block: 20px 28px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  box-sizing: border-box;
+}
+h1 {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(28px, 8vw, 44px); margin: 0; letter-spacing: .01em;
+  color: var(--cream); text-wrap: balance; text-align: center;
+}
+h1 span { color: var(--glass); }
+.table-btn {
+  position: relative;
+  width: min(88vw, 62vh, 460px); aspect-ratio: 1; max-width: 100%;
+  border: 0; padding: 0; border-radius: 50%; cursor: pointer;
+  background:
+    radial-gradient(circle at 50% 50%, var(--felt) 0 64%, transparent 64.5%),
+    repeating-radial-gradient(circle at 50% 50%, var(--wood) 0 3px, #77482a 3px 7px);
+  box-shadow:
+    inset 0 0 0 10px var(--wood-dark),
+    inset 0 0 40px rgba(0,0,0,.55),
+    0 30px 60px rgba(0,0,0,.6);
+  touch-action: manipulation;
+}
+.table-btn:focus-visible { outline: 3px solid var(--glass); outline-offset: 6px; }
+.table-btn::after {
+  content: ""; position: absolute; inset: 18%; border-radius: 50%;
+  border: 2px dashed rgba(243,230,207,.12); pointer-events: none;
+}
+.bottle {
+  position: absolute; left: 50%; top: 50%;
+  width: 78%; height: auto;
+  transform: translate(-50%, -50%) rotate(0deg);
+  will-change: transform;
+  filter: drop-shadow(6px 10px 8px rgba(0,0,0,.5));
+}
+.status { display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 64px; text-align: center; }
+.status .big { font-family: var(--display); font-size: clamp(20px, 5.5vw, 28px); }
+.status .small { color: var(--muted); font-size: 15px; font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { .pulse { animation: none !important; } }
+.pulse { animation: pulse 1.8s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .55; } }
+</style>
+
+</head><body>
+<div class="app">
+  <h1>Gra w <span>butelkę</span></h1>
+
+  <button class="table-btn" id="spin" aria-label="Zakręć butelką">
+    <svg class="bottle" id="bottle" viewBox="0 0 400 120" aria-hidden="true">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#7fd39b"/>
+          <stop offset=".35" stop-color="#3fa565"/>
+          <stop offset=".8" stop-color="#1d6b3b"/>
+          <stop offset="1" stop-color="#14502b"/>
+        </linearGradient>
+      </defs>
+      <!-- korpus po lewej, szyjka wskazuje w prawo (kierunek 0°) -->
+      <path fill="url(#g)" d="M40 20 Q20 20 20 40 L20 80 Q20 100 40 100 L215 100 Q245 100 268 82 L300 70 L355 70 L355 50 L300 50 L268 38 Q245 20 215 20 Z"/>
+      <rect x="352" y="45" width="20" height="30" rx="4" fill="#c9a24a"/>
+      <rect x="60" y="34" width="120" height="52" rx="6" fill="#f3e6cf" opacity=".92"/>
+      <text x="120" y="67" text-anchor="middle" font-family="Bagel Fat One, sans-serif" font-size="22" fill="#6b3f22">KRĘĆ</text>
+      <path d="M40 30 L215 30 Q238 30 256 42" stroke="#fff" stroke-opacity=".35" stroke-width="5" fill="none" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <div class="status" aria-live="polite">
+    <div class="big pulse" id="msg">Dotknij stołu, aby zakręcić</div>
+    <div class="small" id="sub">Butelka kręci się 20–30 sekund</div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const bottle = document.getElementById('bottle');
+  const btn = document.getElementById('spin');
+  const msg = document.getElementById('msg');
+  const sub = document.getElementById('sub');
+  let angle = 0, spinning = false, wakeLock = null;
+
+  const setAngle = a => { bottle.style.transform = `translate(-50%, -50%) rotate(${a}deg)`; };
+
+  // Kryptograficznie losowa liczba z [0,1)
+  const rnd = () => {
+    try { const u = new Uint32Array(1); crypto.getRandomValues(u); return u[0] / 2 ** 32; }
+    catch { return Math.random(); }
+  };
+
+  async function lockScreen() {
+    try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {}
+  }
+  function unlockScreen() { try { wakeLock?.release(); } catch {} wakeLock = null; }
+
+  function spin() {
+    if (spinning) return;
+    spinning = true;
+    const duration = 20000 + rnd() * 10000;          // 20–30 s
+    const turns = 14 + Math.floor(rnd() * 6);        // pełne obroty
+    const start = angle;
+    const delta = turns * 360 + rnd() * 360;         // losowa pozycja końcowa
+    const t0 = performance.now();
+    msg.textContent = 'Kręci się…';
+    msg.classList.remove('pulse');
+    lockScreen();
+    try { navigator.vibrate?.(30); } catch {}
+
+    // ease-out quint: szybki start, bardzo długie, płynne zwalnianie
+    const ease = p => 1 - Math.pow(1 - p, 5);
+
+    function frame(now) {
+      const p = Math.min((now - t0) / duration, 1);
+      angle = start + delta * ease(p);
+      setAngle(angle);
+      sub.textContent = p < 1 ? `jeszcze ok. ${Math.ceil((duration - (now - t0)) / 1000)} s` : '';
+      if (p < 1) requestAnimationFrame(frame);
+      else finish();
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function finish() {
+    angle %= 360;
+    setAngle(angle);
+    spinning = false;
+    unlockScreen();
+    try { navigator.vibrate?.([60, 40, 60]); } catch {}
+    msg.textContent = 'Stop! Na kogo wskazuje?';
+    sub.textContent = 'Dotknij stołu, aby zakręcić ponownie';
+  }
+
+  btn.addEventListener('click', spin);
+  setAngle(-25);
+  angle = -25;
+})();
+</script>
+<script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js'))}</script>
+</body></html>
